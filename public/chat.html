@@ -1,34 +1,48 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Chat Application</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
     <link rel="stylesheet" href="./styles/chat.css">
 </head>
 <body>
-    <div class="chat-container">
-        <div class="sidebar">
-            <div class="search-container">
-                <input type="text" class="search-input" placeholder="Search users..." id="userSearch">
-                <div class="search-results" id="searchResults"></div>
+    <div id="app">
+        <div id="sidebar">
+            <h2>Channels</h2>
+            <ul id="channels">
+                <li># General</li>
+            </ul>
+            <button id="addChannel">+ Add Channel</button>
+            <div id="channelModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" id="closeChannelModal">&times;</span>
+                    <h3>Search for a channel</h3>
+                    <input id="searchChannelInput" type="text" placeholder="Enter channel name..." />
+                    <button id="searchChannelButton">Search</button>
+                    <ul id="channelSearchResults"></ul>
+                </div>
             </div>
-            <div class="users-list" id="usersList">
-                <!-- Users will be dynamically added here -->
+            <h2>Direct Messages</h2>
+            <ul id="directMessages"></ul>
+            <button id="addUser">+ Add User</button>
+            <div id="userModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" id="closeUserModal">&times;</span>
+                    <h3>Search for a user</h3>
+                    <input id="searchUserInput" type="text" placeholder="Enter username..." />
+                    <button id="searchUserButton">Search</button>
+                    <ul id="userSearchResults"></ul>
+                </div>
             </div>
         </div>
-        <div class="chat-area">
-            <div class="chat-header" id="chatHeader">
-                <div class="current-user-avatar">Select a user to start chatting</div>
-                <div class="current-user-name"></div>
-            </div>
-            <div class="messages-container" id="messagesContainer">
-                <!-- Messages will be dynamically added here -->
-            </div>
-            <div class="message-input-container">
-                <input type="text" class="message-input" placeholder="Type a message..." id="messageInput">
-                <button class="send-button" id="sendButton">Send</button>
-            </div>
+        <div id="chat">
+            <div id="messages"></div>
+            <input id="messageInput" placeholder="Type a message..." />
+            <button id="sendMessage">Send</button>
         </div>
     </div>
-    <script src="chat.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./js/chat.js"></script>
 </body>
 </html>
