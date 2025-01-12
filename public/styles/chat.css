@@ -1,53 +1,123 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
-    display: flex;
-    height: 100vh;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
 }
 
 #app {
     display: flex;
     width: 100%;
+    max-width: 1200px;
+    height: 100vh;
+    margin: 0 auto;
+    background: #ffffff;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 #sidebar {
-    width: 25%;
-    background-color: #f4f4f4;
+    width: 300px;
+    background: #ffffff;
+    border-right: 1px solid #e0e0e0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+#sidebar h2 {
+    color: #333333;
+    margin: 20px 0 15px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+#channels, #directMessages {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 15px;
+}
+
+#channels li, #directMessages li {
+    padding: 10px 15px;
+    margin: 5px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #333333;
+}
+
+#channels li:hover, #directMessages li:hover {
+    background: #f8f8f8;
+}
+
+#addChannel, #addUser {
     padding: 10px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    margin: 5px 0 20px;
+    background: linear-gradient(to right, #ffd700, #cccccc);
+    color: #333333;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#addChannel:hover, #addUser:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
 }
 
 #chat {
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 10px;
+    padding: 20px;
+    background: #ffffff;
 }
 
 #messages {
     flex: 1;
     overflow-y: auto;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    padding: 5px;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: #f8f8f8;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
 }
 
-input, button {
-    padding: 10px;
-    margin-right: 5px;
-    font-size: 16px;
+#messageInput {
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-right: 10px;
+    flex: 1;
 }
 
-button {
-    cursor: pointer;
-    background-color: #007bff;
-    color: white;
+#messageInput:focus {
+    outline: none;
+    border-color: #ffd700;
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+}
+
+#sendMessage {
+    padding: 12px 24px;
+    background: linear-gradient(to right, #ffd700, #cccccc);
+    color: #333333;
     border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-button:hover {
-    background-color: #0056b3;
+#sendMessage:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
 }
+
 .modal {
     display: none;
     position: fixed;
@@ -56,63 +126,109 @@ button:hover {
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
 }
 
 .modal-content {
-    background-color: #fff;
+    background-color: #ffffff;
     margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 40%;
-    text-align: center;
+    padding: 30px;
+    border-radius: 15px;
+    width: 400px;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .modal-content h3 {
+    color: #333333;
     margin-bottom: 20px;
+    font-size: 20px;
+    text-align: center;
 }
 
 .modal-content input {
-    width: 80%;
-    padding: 10px;
-    margin-bottom: 10px;
-    font-size: 16px;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    background: #f8f8f8;
+}
+
+.modal-content input:focus {
+    outline: none;
+    border-color: #ffd700;
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
 }
 
 .modal-content button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: #fff;
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(to right, #ffd700, #cccccc);
+    color: #333333;
     border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 .modal-content button:hover {
-    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
 }
 
 .modal-content ul {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 15px 0 0;
+    max-height: 200px;
+    overflow-y: auto;
 }
 
 .modal-content ul li {
-    padding: 10px;
-    border: 1px solid #ddd;
-    margin-bottom: 5px;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 8px;
+    border-radius: 8px;
     cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 .modal-content ul li:hover {
-    background-color: #f0f0f0;
+    background: #f8f8f8;
 }
 
 .close {
     position: absolute;
     right: 20px;
-    top: 10px;
-    font-size: 20px;
+    top: 20px;
+    font-size: 24px;
+    color: #666666;
     cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close:hover {
+    color: #333333;
+}
+
+@media (max-width: 768px) {
+    #app {
+        flex-direction: column;
+    }
+
+    #sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .modal-content {
+        width: 90%;
+        margin: 10% auto;
+    }
 }

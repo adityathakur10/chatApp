@@ -43,6 +43,24 @@
         </div>
     </div>
     <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io('http://localhost:3000');
+
+// Reconnect to server
+socket.on('connect', () => {
+    console.log('Connected to server:', socket.id);
+
+    // Emit "userLoggedIn" with the email from localStorage
+    const email = localStorage.getItem('email');
+    if (email) {
+        socket.emit('userLoggedIn', email);
+    }
+});
+
+socket.on('disconnect', () => {
+    console.log('Disconnected from server');
+});
+    </script>
     <script src="./js/chat.js"></script>
 </body>
 </html>

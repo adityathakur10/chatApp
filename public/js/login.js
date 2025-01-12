@@ -1,3 +1,5 @@
+const socket=io('http://localhost:3000')
+
 document.getElementById('loginForm').addEventListener('submit',async function(e) {
     e.preventDefault();
     
@@ -42,6 +44,9 @@ document.getElementById('loginForm').addEventListener('submit',async function(e)
             if(response.ok){
                 alert(data.message || 'login successful!')
                 this.reset();
+                socket.emit('userLoggedIn',email)
+
+                localStorage.setItem('email', email);
                 window.location.href='/chat.html';
             }else{
                 alert(data.message || 'login failed!')

@@ -18,6 +18,10 @@ const userSchema=new mongoose.Schema({
         type:String,
         required:true,
         minLength:6
+    },
+    socketId:{
+        type:String,
+
     }
 })
 
