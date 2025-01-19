@@ -37,12 +37,23 @@ closeChannelModal.addEventListener('click', () => {
     channelSearchResults.innerHTML = '';
 });
 
-// Search for users
+
+
+let activeChatUser=null;
+function direct_msg_event(userElement,username){
+    userElement.addEventListener('click',()=>{
+        activeChatUser=username;
+        const chatHeader=document.getElementById('chatHeader');
+        chatHeader.textContent=`chat with ${username}`;
+        console.log(`chat with ${username}`);
+    })
+}
+//search for user
 searchUserButton.addEventListener('click', async () => {
+    // console.log('Button clicked'); 
     const query = searchUserInput.value.trim();
     if (!query) return;
-
-    const response = await fetch('/add-user', {
+    const response = await fetch('http://localhost:3000/chatApp/chat/addUser', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: query }),
@@ -58,6 +69,8 @@ searchUserButton.addEventListener('click', async () => {
             userElement.textContent = username;
             document.getElementById('directMessages').appendChild(userElement);
             userModal.style.display = 'none';
+
+            direct_msg_event(userElement,username);
         });
         userSearchResults.appendChild(resultItem);
     } else {
@@ -66,6 +79,40 @@ searchUserButton.addEventListener('click', async () => {
         userSearchResults.appendChild(errorItem);
     }
 });
+//message is sent 
+const sendMessageButton=document.getElementById('sendMessage')
+sendMessageButton.addEventListener('click',()=>{
+    const messageInput=document.getElementById('messageInput');
+    const message=messageInput.value.trim();
+
+    if(!activeChatUser){
+        alert('please select a user!!!')
+        return ;
+    }
+    if(!message){
+        aler('please enter a message!!!')
+        return ;
+    }
+    socket.emit('sendMessage', { to: activeChatUser, message });
+
+    const messagesContainer = document.getElementById('messages');
+    const messageElement = document.createElement('div');
+    messageElement.textContent = `You: ${message}`;
+    messagesContainer.appendChild(messageElement);
+
+    messageInput.value = '';
+})
+//received msg is saved 
+socket.on('receiveMessage', ({ from, message }) => {
+    const messagesContainer = document.getElementById('messages');
+    const messageElement = document.createElement('div');
+    messageElement.textContent = `${from}: ${message}`;
+    messagesContainer.appendChild(messageElement);
+});
+
+
+
+
 
 // Search for channels
 searchChannelButton.addEventListener('click', async () => {

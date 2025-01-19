@@ -9,6 +9,7 @@ const User=require('./models/user')
 
 const connectDB=require('./db/connect')
 const authRoutes=require('./routes/auth')
+const chatRoutes=require('./routes/chat')
 
 //binding socket.io with the server
 const app=express();
@@ -32,6 +33,7 @@ app.use((req,res,next)=>{
 
 //routes
 app.use('/chatApp/auth',authRoutes)
+app.use('/chatApp/chat',chatRoutes)
 
 // webSockets
 io.on('connection',(socket)=>{
