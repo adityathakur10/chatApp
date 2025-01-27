@@ -10,6 +10,8 @@ const User=require('./models/user')
 const connectDB=require('./db/connect')
 const authRoutes=require('./routes/auth')
 const chatRoutes=require('./routes/chat')
+const authenticate=require('./middlewares/auth')
+const chatSocketHandeler=require('./socket/chat')
 
 //binding socket.io with the server
 const app=express();
@@ -33,34 +35,35 @@ app.use((req,res,next)=>{
 
 //routes
 app.use('/chatApp/auth',authRoutes)
-app.use('/chatApp/chat',chatRoutes)
+app.use('/chatApp/chat',authenticate,chatRoutes)
 
 // webSockets
-io.on('connection',(socket)=>{
-    console.log('user connected: ',socket.id)
+chatSocketHandeler(io)
+// io.on('connection',(socket)=>{
+//     console.log('user connected: ',socket.id)
 
-    socket.on('userLoggedIn',async(email)=>{
-        try {
-            const user=await User.findOneAndUpdate(
-                {email},
-                {socketId:socket.id},
-                {new:true}
-            );
-            console.log(`${email} is now connected with socketId ${socket.id}`)
-        } catch (error) {
-            console.log('error updating socketId:- ',error)
-        }
-    })
+//     socket.on('userLoggedIn',async(email)=>{
+//         try {
+//             const user=await User.findOneAndUpdate(
+//                 {email},
+//                 {socketId:socket.id},
+//                 {new:true}
+//             );
+//             console.log(`${email} is now connected with socketId ${socket.id}`)
+//         } catch (error) {
+//             console.log('error updating socketId:- ',error)
+//         }
+//     })
 
-    socket.on('disconnect',async()=>{
-        await User.findOneAndUpdate(
-            {socketId:socket.id},
-            {socketId:null},
-            {new:true}
-        )
-        console.log('user disconnected:- ',socket.id)
-    })
-})
+//     socket.on('disconnect',async()=>{
+//         await User.findOneAndUpdate(
+//             {socketId:socket.id},
+//             {socketId:null},
+//             {new:true}
+//         )
+//         console.log('user disconnected:- ',socket.id)
+//     })
+// })
 
 
 const port=3000;
