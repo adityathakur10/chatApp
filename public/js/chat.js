@@ -94,7 +94,7 @@ sendMessageButton.addEventListener('click',()=>{
         return ;
     }
     socket.emit('sendMessage', { to: activeChatUser, message });
-
+console.log('message not got baack')
     const messagesContainer = document.getElementById('messages');
     const messageElement = document.createElement('div');
     messageElement.textContent = `You: ${message}`;

@@ -4,14 +4,16 @@ const chatHandeler=async(io)=>{
     io.on('connection',(socket)=>{
         console.log('user connected',socket.id);
 
-        socket.on('userLoggenIn',(username)=>{
-            chatController.userLogIn(socket,username);
+        socket.on('userLoggedIn',(email)=>{
+            chatController.userLogIn(socket,email);
         })
         socket.on('sendMessage',(data)=>{
             chatController.sendMessage(io,data);
+            console.log('ddddddddddddddddddddddd')
         })
         socket.on('disconnect',async()=>{
-            console.log(`user disconnected `,socket.id);
+            await chatController.userLoggedOut(socket.id);
+            console.log(`user disconnecttttted `,socket.id);
         })
     })
 }

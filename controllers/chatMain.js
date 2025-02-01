@@ -1,15 +1,21 @@
 const chatHelper=require('./chatHelper');
 
-const userLogIn=async(socketId,username)=>{
+const userLogIn=async(socketId,email)=>{
     try {
-        const updatedUser=await chatHelper.updateSocketId(username,socketId.id);
-        console.log(`${username} is now connected with socketid `);
+        const updatedUser=await chatHelper.setSocketId(email,socketId.id);
+        console.log(`user with ${email} is now connected with socketid `);
     } catch (error) {
         console.log(`error updating socketId`,error);
     }
 
 }
-
+const userLoggedOut=async(socketId)=>{
+    try {
+        await chatHelper.resetSocketId(socketId);
+    } catch (error) {
+        console.log('error reseting socket id')
+    }
+}
 const sendMessage=async(io,{from,to,message})=>{
     try {
         await chatHelper.saveMessage(from,to,message);
@@ -24,5 +30,6 @@ const sendMessage=async(io,{from,to,message})=>{
 
 module.exports={
     sendMessage,
-    userLogIn
+    userLogIn,
+    userLoggedOut
 }
