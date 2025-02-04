@@ -37,6 +37,16 @@ closeChannelModal.addEventListener('click', () => {
     channelSearchResults.innerHTML = '';
 });
 
+//      function to get token 
+// function getcookie(name){
+//     const cookies=document.cookie.split('; ');
+//     for(const cookie of cookies){
+//         const [key,value]=cookie.split('=');
+//         if(key===name)return value
+//     }
+//     return null;
+// }
+// const token=getcookie('token')
 
 
 let activeChatUser=null;
@@ -50,7 +60,7 @@ function direct_msg_event(userElement,username){
 }
 //search for user
 searchUserButton.addEventListener('click', async () => {
-    // console.log('Button clicked'); 
+    console.log('Button clicked'); 
     const query = searchUserInput.value.trim();
     if (!query) return;
     const response = await fetch('http://localhost:3000/chatApp/chat/addUser', {
@@ -79,6 +89,7 @@ searchUserButton.addEventListener('click', async () => {
         userSearchResults.appendChild(errorItem);
     }
 });
+
 //message is sent 
 const sendMessageButton=document.getElementById('sendMessage')
 sendMessageButton.addEventListener('click',()=>{
@@ -90,7 +101,7 @@ sendMessageButton.addEventListener('click',()=>{
         return ;
     }
     if(!message){
-        aler('please enter a message!!!')
+        alert('please enter a message!!!')
         return ;
     }
     socket.emit('sendMessage', { to: activeChatUser, message });
@@ -103,10 +114,11 @@ console.log('message not got baack')
     messageInput.value = '';
 })
 //received msg is saved 
-socket.on('receiveMessage', ({ from, message }) => {
+socket.on('receiveMessage', (data) => {
+    console.log(typeof(data.content))
     const messagesContainer = document.getElementById('messages');
     const messageElement = document.createElement('div');
-    messageElement.textContent = `${from}: ${message}`;
+    messageElement.textContent = `${data.from}: ${data.content}`;
     messagesContainer.appendChild(messageElement);
 });
 

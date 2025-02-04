@@ -17,8 +17,8 @@ const resetSocketId=async(socketId)=>{
         console.log('error while reseting sockeid')
     }
 }
-const saveMessage=async(from,to,message)=>{
-    const newMsg=new Message({from ,to,message});
+const saveMessage=async(from,to,content)=>{
+    const newMsg=new Message({from ,to,content});
     return await newMsg.save();
 }
 const getChatHistory=async(user_A,user_B)=>{
@@ -30,7 +30,7 @@ const getChatHistory=async(user_A,user_B)=>{
     }).sort({timestamp:1})
 }
 const findUserbyusername=async(username)=>{
- console.log(`hellooooo ${username}`)
+//  console.log(`hellooooo ${username}`)
     return await User.findOne({username})
 }
 

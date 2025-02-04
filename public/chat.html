@@ -45,7 +45,22 @@
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io('http://localhost:3000');
+         // Func to get cookie 
+         function getcookie(name) {
+            const cookies = document.cookie.split('; ');
+            for (const cookie of cookies) {
+                const [key, value] = cookie.split('='); 
+                if (key === name) return value; 
+            }
+            return null; 
+        }
+        const token = getcookie('token');
+console.log("heloo from html")
+//console.log(document.cookie.token)
+        // Initialize the socket connection with the token as a query parameter
+        const socket = io('http://localhost:3000', {
+            query: { token: token }, 
+        });
 
 // Reconnect to server
 socket.on('connect', () => {

@@ -40,7 +40,8 @@ const login=async(req,res)=>{
         const token=existingUser.createJWT()
 
         res.cookie('token',token,{
-            httpOnly:true,
+            // httpOnly:true,
+            httpOnly:false,
             secure:process.env.NODE_ENV='production',
             sameSite:'Strict',
             maxAge:3600000
