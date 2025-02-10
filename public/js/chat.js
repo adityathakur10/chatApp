@@ -37,58 +37,110 @@ closeChannelModal.addEventListener('click', () => {
     channelSearchResults.innerHTML = '';
 });
 
-//      function to get token 
-// function getcookie(name){
-//     const cookies=document.cookie.split('; ');
-//     for(const cookie of cookies){
-//         const [key,value]=cookie.split('=');
-//         if(key===name)return value
-//     }
-//     return null;
-// }
-// const token=getcookie('token')
 
 
 let activeChatUser=null;
-function direct_msg_event(userElement,username){
-    userElement.addEventListener('click',()=>{
-        activeChatUser=username;
-        const chatHeader=document.getElementById('chatHeader');
-        chatHeader.textContent=`chat with ${username}`;
-        console.log(`chat with ${username}`);
-    })
+// function direct_msg_event(userElement,username){
+//     userElement.addEventListener('click',()=>{
+//         activeChatUser=username;
+//         const chatHeader=document.getElementById('chatHeader');
+//         chatHeader.textContent=`chat with ${username}`;
+//         console.log(`chat with ${username}`);
+//     })
+// }
+async function selectChatUser(username){
+    
+    activeChatUser=username;
+    const chatHeader=document.getElementById('chatHeader');
+    chatHeader.textContent=`Chat with ${username}`;
+    console.log(`chat with ${username}`);
+    //clear old chats
+    const messageContainer=document.getElementById('messages');
+    messageContainer.innerHTML=''
+    //fetching old chats
+    try {
+        // const response=await fetch(`http://localhost:3000/chatApp/chat/fetchMessages`)
+        const response = await fetch('http://localhost:3000/chatApp/chat/fetchMessages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ to: username }), // Sending 'to' in request body
+        });
+        const messages=await response.json();
+
+        //displaying old messages 
+        messages.forEach(msg => {
+            const messageElement=document.createElement('div');
+            messageElement.textContent=`${msg.from}: ${msg.content}`;
+            messageContainer.appendChild(messageElement);
+        });
+        console.log(`previous chat loaded for user:- ${username}`)
+
+    } catch (error) {
+        console.log('error fetching chat history : ',error);
+    }
 }
 //search for user
-searchUserButton.addEventListener('click', async () => {
-    console.log('Button clicked'); 
-    const query = searchUserInput.value.trim();
-    if (!query) return;
-    const response = await fetch('http://localhost:3000/chatApp/chat/addUser', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: query }),
+
+// searchUserButton.addEventListener('click', async () => {
+//     console.log('Button clicked'); 
+//     const query = searchUserInput.value.trim();
+//     if (!query) return;
+//     const response = await fetch('http://localhost:3000/chatApp/chat/addUser', {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ username: query }),
+//     });
+
+//     userSearchResults.innerHTML = '';
+//     if (response.ok) {
+//         const { username } = await response.json();
+//         const resultItem = document.createElement('li');
+//         resultItem.textContent = username;
+//         resultItem.addEventListener('click', () => {
+//             const userElement = document.createElement('li');
+//             userElement.textContent = username;
+//             document.getElementById('directMessages').appendChild(userElement);
+//             userModal.style.display = 'none';
+
+//             direct_msg_event(userElement,username);
+//         });
+//         userSearchResults.appendChild(resultItem);
+//     } else {
+//         const errorItem = document.createElement('li');
+//         errorItem.textContent = 'User not found!';
+//         userSearchResults.appendChild(errorItem);
+//     }
+// });
+searchUserButton.addEventListener('click',async()=>{
+    console.log('search user button clicked');
+    const query=searchUserInput.value.trim();
+    if(!query)return;
+    const response=await fetch('http://localhost:3000/chatApp/chat/addUser',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({username:query}),
     });
+    userSearchResults.innerHTML='';
 
-    userSearchResults.innerHTML = '';
-    if (response.ok) {
-        const { username } = await response.json();
-        const resultItem = document.createElement('li');
-        resultItem.textContent = username;
-        resultItem.addEventListener('click', () => {
-            const userElement = document.createElement('li');
-            userElement.textContent = username;
-            document.getElementById('directMessages').appendChild(userElement);
-            userModal.style.display = 'none';
+    if(response.ok){
+        const {username}=await response.json();
+        //add user to to chat list 
+        const userElement=document.createElement('li');
+        userElement.textContent=username;
+        document.getElementById('directMessages').appendChild(userElement);
 
-            direct_msg_event(userElement,username);
+        userModal.style.display='none';
+
+        //add click event to start the chat 
+        userElement.addEventListener('click',()=>{
+            selectChatUser(username);
         });
-        userSearchResults.appendChild(resultItem);
-    } else {
-        const errorItem = document.createElement('li');
-        errorItem.textContent = 'User not found!';
+    }else{
+        const errorItem=document.createElement('li');
+        errorItem.textContent='User not found!!!';
         userSearchResults.appendChild(errorItem);
     }
-});
+})
 
 //message is sent 
 const sendMessageButton=document.getElementById('sendMessage')
@@ -104,8 +156,10 @@ sendMessageButton.addEventListener('click',()=>{
         alert('please enter a message!!!')
         return ;
     }
+    
     socket.emit('sendMessage', { to: activeChatUser, message });
-console.log('message not got baack')
+    
+    //message shown on frontend
     const messagesContainer = document.getElementById('messages');
     const messageElement = document.createElement('div');
     messageElement.textContent = `You: ${message}`;
@@ -115,7 +169,12 @@ console.log('message not got baack')
 })
 //received msg is saved 
 socket.on('receiveMessage', (data) => {
-    console.log(typeof(data.content))
+    // console.log(typeof(data.content))
+    if(activeChatUser!==data.from){
+        console.log('sender is not the selected one ');
+        return ;
+    }
+
     const messagesContainer = document.getElementById('messages');
     const messageElement = document.createElement('div');
     messageElement.textContent = `${data.from}: ${data.content}`;
