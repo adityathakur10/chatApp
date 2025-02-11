@@ -3,7 +3,7 @@ const chatHelper=require('./chatHelper');
 const userLogIn=async(socketId,email)=>{
     try {
         const updatedUser=await chatHelper.setSocketId(email,socketId.id);
-        console.log(`user with ${email} is now connected with socketid `);
+        // console.log(`user with ${email} is now connected with socketid `);
     } catch (error) {
         console.log(`error updating socketId`,error);
     }
@@ -21,11 +21,11 @@ const sendMessage = async (io, from, to, content) => {
         await chatHelper.saveMessage( from,to, content );
 
         const recipient = await chatHelper.findUserbyusername(to);
-        console.log("Recipient:", recipient);
+        // console.log("Recipient:", recipient);
         
         if (recipient && recipient.socketId) {
             io.to(recipient.socketId).emit("receiveMessage", { from, content });
-            console.log('message received')
+            // console.log('message received')
             return { success: true, message: "Message sent in real-time" };
         } else {
             return { success: true, message: "User offline, message stored" };

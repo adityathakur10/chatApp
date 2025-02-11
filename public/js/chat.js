@@ -13,179 +13,164 @@ const searchChannelButton = document.getElementById('searchChannelButton');
 
 const userSearchResults = document.getElementById('userSearchResults');
 const channelSearchResults = document.getElementById('channelSearchResults');
+const directMessagesList = document.getElementById('directMessages');
 
-// Open the "Add User" modal
-addUserButton.addEventListener('click', () => {
-    userModal.style.display = 'block';
-});
+addUserButton.addEventListener('click', () => userModal.style.display = 'block');
+addChannelButton.addEventListener('click', () => channelModal.style.display = 'block');
 
-// Open the "Add Channel" modal
-addChannelButton.addEventListener('click', () => {
-    channelModal.style.display = 'block';
-});
+closeUserModal.addEventListener('click', () => closeModal(userModal, searchUserInput, userSearchResults));
+closeChannelModal.addEventListener('click', () => closeModal(channelModal, searchChannelInput, channelSearchResults));
 
-// Close modals
-closeUserModal.addEventListener('click', () => {
-    userModal.style.display = 'none';
-    searchUserInput.value = '';
-    userSearchResults.innerHTML = '';
-});
+function closeModal(modal, inputField, resultContainer) {
+    modal.style.display = 'none';
+    inputField.value = '';
+    resultContainer.innerHTML = '';
+}
 
-closeChannelModal.addEventListener('click', () => {
-    channelModal.style.display = 'none';
-    searchChannelInput.value = '';
-    channelSearchResults.innerHTML = '';
-});
-
-
-
-let activeChatUser=null;
-// function direct_msg_event(userElement,username){
-//     userElement.addEventListener('click',()=>{
-//         activeChatUser=username;
-//         const chatHeader=document.getElementById('chatHeader');
-//         chatHeader.textContent=`chat with ${username}`;
-//         console.log(`chat with ${username}`);
-//     })
-// }
-async function selectChatUser(username){
-    
-    activeChatUser=username;
-    const chatHeader=document.getElementById('chatHeader');
-    chatHeader.textContent=`Chat with ${username}`;
-    console.log(`chat with ${username}`);
-    //clear old chats
-    const messageContainer=document.getElementById('messages');
-    messageContainer.innerHTML=''
-    //fetching old chats
+async function fetchAddedUsers() {
     try {
-        // const response=await fetch(`http://localhost:3000/chatApp/chat/fetchMessages`)
+        const response = await fetch('http://localhost:3000/chatApp/chat/fetchAddedUsers');
+        if (response.ok) {
+            const users = await response.json();
+            users.forEach(username => addUserToChatList(username));
+        }
+    } catch (error) {
+        console.error('Error fetching added users:', error);
+    }
+}
+
+function addUserToChatList(username) {
+    if ([...directMessagesList.children].some(user => user.dataset.username === username)) return;
+    
+    const userElement = document.createElement('li');
+    userElement.dataset.username = username;
+    userElement.textContent = username;
+
+    const removeButton = document.createElement('button');
+    removeButton.textContent = '❌';
+    removeButton.addEventListener('click', () => removeUser(username));
+
+    userElement.appendChild(removeButton);
+    userElement.addEventListener('click', () => selectChatUser(username));
+    directMessagesList.appendChild(userElement);
+}
+
+async function removeUser(username) {
+    try {
+        const response = await fetch('http://localhost:3000/chatApp/chat/removeUser', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username }),
+        });
+
+        if (response.ok) {
+            const userElement = directMessagesList.querySelector(`li[data-username="${username}"]`);
+            if (userElement) directMessagesList.removeChild(userElement);
+            alert(`${username} has been removed.`);
+        } else {
+            alert('Failed to remove user.');
+        }
+    } catch (error) {
+        console.error('Error removing user:', error);
+    }
+}
+
+searchUserButton.addEventListener('click', async () => {
+    const query = searchUserInput.value.trim();
+    if (!query) return;
+
+    const response = await fetch('http://localhost:3000/chatApp/chat/searchUser', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: query }),
+    });
+
+    userSearchResults.innerHTML = '';
+    if (response.ok) {
+        const users = await response.json();
+        users.forEach(user => {
+            const userItem = document.createElement('li');
+            userItem.textContent = user;
+            userItem.addEventListener('click', () => addUser(user));
+            userSearchResults.appendChild(userItem);
+        });
+    } else {
+        userSearchResults.innerHTML = '<li>User not found!</li>';
+    }
+});
+
+async function addUser(username) {
+    const response = await fetch('http://localhost:3000/chatApp/chat/addUser', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username }),
+    });
+
+    if (response.ok) {
+        addUserToChatList(username);
+        alert('User added successfully!');
+        userModal.style.display = 'none';
+        searchUserInput.value = '';
+    } else if (response.status === 409) {
+        alert('User already added!');
+    } else {
+        alert('An error occurred. Please try again.');
+    }
+}
+
+let activeChatUser = null;
+async function selectChatUser(username) {
+    activeChatUser = username;
+    document.getElementById('chatHeader').textContent = `Chat with ${username}`;
+    document.getElementById('messages').innerHTML = '';
+
+    try {
         const response = await fetch('http://localhost:3000/chatApp/chat/fetchMessages', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ to: username }), // Sending 'to' in request body
+            body: JSON.stringify({ to: username }),
         });
-        const messages=await response.json();
+        const messages = await response.json();
 
-        //displaying old messages 
         messages.forEach(msg => {
-            const messageElement=document.createElement('div');
-            messageElement.textContent=`${msg.from}: ${msg.content}`;
-            messageContainer.appendChild(messageElement);
+            const messageElement = document.createElement('div');
+            messageElement.textContent = `${msg.from}: ${msg.content}`;
+            document.getElementById('messages').appendChild(messageElement);
         });
-        console.log(`previous chat loaded for user:- ${username}`)
-
     } catch (error) {
-        console.log('error fetching chat history : ',error);
+        console.error('Error fetching chat history:', error);
     }
 }
-//search for user
 
-// searchUserButton.addEventListener('click', async () => {
-//     console.log('Button clicked'); 
-//     const query = searchUserInput.value.trim();
-//     if (!query) return;
-//     const response = await fetch('http://localhost:3000/chatApp/chat/addUser', {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify({ username: query }),
-//     });
+document.getElementById('sendMessage').addEventListener('click', () => {
+    const messageInput = document.getElementById('messageInput');
+    const message = messageInput.value.trim();
+    if (!activeChatUser || !message) return alert('Please select a user and enter a message!');
 
-//     userSearchResults.innerHTML = '';
-//     if (response.ok) {
-//         const { username } = await response.json();
-//         const resultItem = document.createElement('li');
-//         resultItem.textContent = username;
-//         resultItem.addEventListener('click', () => {
-//             const userElement = document.createElement('li');
-//             userElement.textContent = username;
-//             document.getElementById('directMessages').appendChild(userElement);
-//             userModal.style.display = 'none';
-
-//             direct_msg_event(userElement,username);
-//         });
-//         userSearchResults.appendChild(resultItem);
-//     } else {
-//         const errorItem = document.createElement('li');
-//         errorItem.textContent = 'User not found!';
-//         userSearchResults.appendChild(errorItem);
-//     }
-// });
-searchUserButton.addEventListener('click',async()=>{
-    console.log('search user button clicked');
-    const query=searchUserInput.value.trim();
-    if(!query)return;
-    const response=await fetch('http://localhost:3000/chatApp/chat/addUser',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({username:query}),
-    });
-    userSearchResults.innerHTML='';
-
-    if(response.ok){
-        const {username}=await response.json();
-        //add user to to chat list 
-        const userElement=document.createElement('li');
-        userElement.textContent=username;
-        document.getElementById('directMessages').appendChild(userElement);
-
-        userModal.style.display='none';
-
-        //add click event to start the chat 
-        userElement.addEventListener('click',()=>{
-            selectChatUser(username);
-        });
-    }else{
-        const errorItem=document.createElement('li');
-        errorItem.textContent='User not found!!!';
-        userSearchResults.appendChild(errorItem);
-    }
-})
-
-//message is sent 
-const sendMessageButton=document.getElementById('sendMessage')
-sendMessageButton.addEventListener('click',()=>{
-    const messageInput=document.getElementById('messageInput');
-    const message=messageInput.value.trim();
-
-    if(!activeChatUser){
-        alert('please select a user!!!')
-        return ;
-    }
-    if(!message){
-        alert('please enter a message!!!')
-        return ;
-    }
-    
     socket.emit('sendMessage', { to: activeChatUser, message });
     
-    //message shown on frontend
-    const messagesContainer = document.getElementById('messages');
     const messageElement = document.createElement('div');
     messageElement.textContent = `You: ${message}`;
-    messagesContainer.appendChild(messageElement);
-
+    document.getElementById('messages').appendChild(messageElement);
+    
     messageInput.value = '';
-})
-//received msg is saved 
-socket.on('receiveMessage', (data) => {
-    // console.log(typeof(data.content))
-    if(activeChatUser!==data.from){
-        console.log('sender is not the selected one ');
-        return ;
-    }
-
-    const messagesContainer = document.getElementById('messages');
-    const messageElement = document.createElement('div');
-    messageElement.textContent = `${data.from}: ${data.content}`;
-    messagesContainer.appendChild(messageElement);
 });
 
+socket.on('receiveMessage', (data) => {
+    if (activeChatUser !== data.from) return;
+
+    const messageElement = document.createElement('div');
+    messageElement.textContent = `${data.from}: ${data.content}`;
+    document.getElementById('messages').appendChild(messageElement);
+});
+
+fetchAddedUsers();
 
 
 
 
-// Search for channels
+// channels
+
 searchChannelButton.addEventListener('click', async () => {
     const query = searchChannelInput.value.trim();
     if (!query) return;

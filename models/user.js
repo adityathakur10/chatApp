@@ -22,7 +22,13 @@ const userSchema=new mongoose.Schema({
     socketId:{
         type:String,
 
-    }
+    },
+    addedUser:[{
+        type:String
+    }],
+    channels:[{
+        type:String
+    }]
 })
 
 userSchema.pre('save',async function(next){

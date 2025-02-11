@@ -202,6 +202,18 @@ body {
     background: #f8f8f8;
 }
 
+.search-result-item {
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin: 5px 0;
+    cursor: pointer;
+    background-color: #f9f9f9;
+}
+
+.search-result-item:hover {
+    background-color: #e0e0e0;
+}
+
 .close {
     position: absolute;
     right: 20px;
