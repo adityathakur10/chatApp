@@ -23,9 +23,10 @@ const userSchema=new mongoose.Schema({
         type:String,
 
     },
-    addedUser:[{
-        type:String
-    }],
+    addedUser:{
+        type:[String],
+        default:[]
+    },
     channels:[{
         type:String
     }]
@@ -33,11 +34,15 @@ const userSchema=new mongoose.Schema({
 
 userSchema.pre('save',async function(next){
     // console.log(this.password)
+    if(!this.isModified('password'))return next();
     const salt=await bcrypt.genSalt(10);
     this.password=await bcrypt.hash(this.password,salt)
     next()
 })
 userSchema.methods.comparePassword=async function(password){
+    console.log("passsss")
+    console.log(password)
+    console.log(this.password)
     const isMatch=await bcrypt.compare(password,this.password)
     return isMatch
 }

@@ -29,10 +29,15 @@ function closeModal(modal, inputField, resultContainer) {
 
 async function fetchAddedUsers() {
     try {
-        const response = await fetch('http://localhost:3000/chatApp/chat/fetchAddedUsers');
+        const response = await fetch('http://localhost:3000/chatApp/chat/fetchAddedUsers',{
+            method:'POST'
+        });
+        // console.log('tttttt')
+        // console.log(response.json)
         if (response.ok) {
             const users = await response.json();
-            users.forEach(username => addUserToChatList(username));
+            // console.log(users)
+            users.forEach(user => addUserToChatList(user));
         }
     } catch (error) {
         console.error('Error fetching added users:', error);
@@ -43,6 +48,7 @@ function addUserToChatList(username) {
     if ([...directMessagesList.children].some(user => user.dataset.username === username)) return;
     
     const userElement = document.createElement('li');
+    console.log(username);
     userElement.dataset.username = username;
     userElement.textContent = username;
 
@@ -60,7 +66,7 @@ async function removeUser(username) {
         const response = await fetch('http://localhost:3000/chatApp/chat/removeUser', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username }),
+            body: JSON.stringify( {username }),
         });
 
         if (response.ok) {
@@ -78,43 +84,46 @@ async function removeUser(username) {
 searchUserButton.addEventListener('click', async () => {
     const query = searchUserInput.value.trim();
     if (!query) return;
-
+    
     const response = await fetch('http://localhost:3000/chatApp/chat/searchUser', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: query }),
     });
-
+    
     userSearchResults.innerHTML = '';
     if (response.ok) {
         const users = await response.json();
         users.forEach(user => {
+
             const userItem = document.createElement('li');
-            userItem.textContent = user;
+            userItem.textContent = user.username;
+           
             userItem.addEventListener('click', () => addUser(user));
             userSearchResults.appendChild(userItem);
         });
+
+        
     } else {
         userSearchResults.innerHTML = '<li>User not found!</li>';
     }
 });
 
-async function addUser(username) {
+async function addUser(user) {
     const response = await fetch('http://localhost:3000/chatApp/chat/addUser', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username }),
+        body: JSON.stringify( user ),
     });
-
+    const res=await response.json()
+    console.log(res)
     if (response.ok) {
-        addUserToChatList(username);
+        addUserToChatList(user.username);
         alert('User added successfully!');
         userModal.style.display = 'none';
         searchUserInput.value = '';
-    } else if (response.status === 409) {
-        alert('User already added!');
     } else {
-        alert('An error occurred. Please try again.');
+        alert(res.message);
     }
 }
 

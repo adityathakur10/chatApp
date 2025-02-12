@@ -1,33 +1,40 @@
 const User=require('../models/user');
-const message_model=require('../models/message')
+const message_model=require('../models/message');
+// const { options } = require('../routes/chat');
 
 const searchUser=async(req,res)=>{
-    const {username}=req.body;
+    try {
+        const {username}=req.body;
     
-    // if(username==req.user.name){
-    //     return res.status(400).json({msg:'user not found'})
-    // }
-    const user=await User.findOne({username:username});
-    
-    if(!user)
-        return res.status(400).json({msg:'user not found'})
-    return res.status(200).json({username:user.username,email:user.email})
+        const users=await User.find({
+            username:{$regex:`^${username}`,$options:'i'}
+        }).select('username email')    
+        console.log(users)
+        if(users.length==0)
+            return res.status(400).json({msg:'No user found'})
+        return res.status(200).json(users)
+    } catch (error) {
+        console.error('error searching for users');
+        return res.status(500).json({ msg: 'Server error' });
+    }
 }
 const addUser=async(req,res)=>{
     try {
-        const {username}=req.body;
+        const {username:name}=req.body;
         const loggedInUser=req.user.name;
 
-    if(username==loggedInUser){
-        return res.status(400).json({msg:'you cannot add yourself.'})
-    }
+         if(name==loggedInUser){
+            return res.status(400).json({message:'you cannot add yourself.'})
+        }
 
-    const user=await User.findOne({username:loggedInUser});
-    if(!user.addedUser.includes(username)){
-        user.addedUser.push(username);
-        await user.save();
-    }else{
-        return res.status(409).json({message:'user already added '})
+        const user=await User.findOne({username:loggedInUser});
+        console.log('adding ',name)
+        if(!user.addedUser.includes(name)){        
+            user.addedUser.push(name);
+            await user.save();
+            res.status(200).json({message:'user added'})
+        }else{
+            return res.status(409).json({message:'user already added '})
     }
     } catch (error) {
         console.log('error adding user :- ',error)
@@ -36,7 +43,8 @@ const addUser=async(req,res)=>{
 }
 const removeUser=async(req,res)=>{
     try {
-        const username=req.body;
+        const {username}=req.body;
+        console.log(username)
     const loggedInUser=req.user.name;
 
     if(!username){
@@ -44,7 +52,7 @@ const removeUser=async(req,res)=>{
     }
     const user=await User.findOne({username:loggedInUser});
         //remove user as a friend
-    user.addedUser=user.addedUser.filter(u=>u!=username);
+    user.addedUser=user.addedUser.filter(u=>u!=username); //.......rmove user from both arrays
     await user.save();
         //delete chat history
     await message_model.deleteMany({
@@ -60,10 +68,11 @@ const removeUser=async(req,res)=>{
 }
 const fetchAddedUser=async(req,res)=>{
     try {
+        console.log('hi')
         const username=req.user.name;
-
         const user=await User.findOne({username});
-        res.json({addedUsers:user.addedUser})
+        console.log(user.addedUser)
+        res.json(user.addedUser)
 
     } catch (error) {
         console.log("error fetching added users!!!");

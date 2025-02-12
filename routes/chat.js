@@ -5,8 +5,8 @@ const {searchUser,fetchMessages,fetchAddedUser,addUser,removeUser}=require('../c
 
 router.post('/addUser',addUser)
 router.post('/fetchMessages',fetchMessages)
-router.post('/fetchAddedUser',fetchAddedUser)
-router.post('/removeUser',removeUser)
+router.post('/fetchAddedUsers',fetchAddedUser)
+router.delete('/removeUser',removeUser)
 router.post('/searchUser',searchUser)
 
 module.exports=router

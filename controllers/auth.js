@@ -32,7 +32,8 @@ const login=async(req,res)=>{
     try {
         const existingUser=await user.findOne({email})
         const passwordCheck=await existingUser.comparePassword(password)
-        // console.log("dxcfvgh")
+        console.log(password)
+        console.log(passwordCheck)
         if(!existingUser || !passwordCheck){
             return res.status(404).json({message:"invalid credentials"})
         }
