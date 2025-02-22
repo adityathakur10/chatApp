@@ -22,6 +22,7 @@ body {
     padding: 20px;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 #sidebar h2 {
@@ -68,6 +69,27 @@ body {
     box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
 }
 
+#logoutButton {
+    padding: 12px;
+    margin: 20px 0 0;
+    background: linear-gradient(to right, #ffd700, #ffcc00);
+    color: #333333;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+}
+
+#logoutButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
+}
+
 #chat {
     flex: 1;
     display: flex;
@@ -79,20 +101,30 @@ body {
 #messages {
     flex: 1;
     overflow-y: auto;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     padding: 20px;
     background: #f8f8f8;
     border-radius: 8px;
     border: 1px solid #e0e0e0;
 }
 
+#messageInputContainer {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: #ffffff;
+    border-top: 1px solid #e0e0e0;
+}
+
 #messageInput {
-    padding: 12px;
+    padding: 6px; /* Decreased height */
     border: 1px solid #e0e0e0;
     border-radius: 8px;
     font-size: 14px;
     margin-right: 10px;
     flex: 1;
+    resize: none; /* Allow text to wrap */
+    height: 50px; /* Set a fixed height */
 }
 
 #messageInput:focus {
@@ -108,7 +140,7 @@ body {
     border: none;
     border-radius: 8px;
     font-weight: 500;
-    font-size: 14px;
+    font-size: 16px;
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -116,6 +148,22 @@ body {
 #sendMessage:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
+}
+
+.sent {
+    text-align: right;
+    background-color: #dcf8c6;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 5px 0;
+}
+
+.received {
+    text-align: left;
+    background-color: #ffffff;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 5px 0;
 }
 
 .modal {

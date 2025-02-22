@@ -35,6 +35,8 @@
                     <ul id="userSearchResults"></ul>
                 </div>
             </div>
+<!-- Add the logout button here -->
+            <button id="logoutButton">Logout</button>
         </div>
         <div id="chat">
             <h3 id="chatHeader">Select a user to chat</h3> 
@@ -55,28 +57,28 @@
             return null; 
         }
         const token = getcookie('token');
-console.log("heloo from html")
-//console.log(document.cookie.token)
+
         // Initialize the socket connection with the token as a query parameter
         const socket = io('http://localhost:3000', {
             query: { token: token }, 
         });
 
-// Reconnect to server
-socket.on('connect', () => {
-    console.log('Connected to server:', socket.id);
+        // Reconnect to server
+         socket.on('connect', () => {
+            console.log('Connected to server:', socket.id);
 
-    // Emit "userLoggedIn" with the email from localStorage
-    const email = localStorage.getItem('email');
-    if (email) {
-        socket.emit('userLoggedIn', email);
-    }
-});
+        // Emit "userLoggedIn" with the email from localStorage
+            const email = localStorage.getItem('email');
+            if (email) {
+                socket.emit('userLoggedIn', email);
+            }
+        });
 
-socket.on('disconnect', () => {
-    console.log('Disconnected from server');
-});
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+        });
     </script>
+   
     <script src="./js/chat.js"></script>
 </body>
 </html>

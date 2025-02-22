@@ -29,14 +29,11 @@ function closeModal(modal, inputField, resultContainer) {
 
 async function fetchAddedUsers() {
     try {
-        const response = await fetch('http://localhost:3000/chatApp/chat/fetchAddedUsers',{
-            method:'POST'
+        const response = await fetch('http://localhost:3000/chatApp/chat/fetchAddedUsers', {
+            method: 'POST'
         });
-        // console.log('tttttt')
-        // console.log(response.json)
         if (response.ok) {
             const users = await response.json();
-            // console.log(users)
             users.forEach(user => addUserToChatList(user));
         }
     } catch (error) {
@@ -46,9 +43,8 @@ async function fetchAddedUsers() {
 
 function addUserToChatList(username) {
     if ([...directMessagesList.children].some(user => user.dataset.username === username)) return;
-    
+
     const userElement = document.createElement('li');
-    console.log(username);
     userElement.dataset.username = username;
     userElement.textContent = username;
 
@@ -66,7 +62,7 @@ async function removeUser(username) {
         const response = await fetch('http://localhost:3000/chatApp/chat/removeUser', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify( {username }),
+            body: JSON.stringify({ username }),
         });
 
         if (response.ok) {
@@ -84,26 +80,22 @@ async function removeUser(username) {
 searchUserButton.addEventListener('click', async () => {
     const query = searchUserInput.value.trim();
     if (!query) return;
-    
+
     const response = await fetch('http://localhost:3000/chatApp/chat/searchUser', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: query }),
     });
-    
+
     userSearchResults.innerHTML = '';
     if (response.ok) {
         const users = await response.json();
         users.forEach(user => {
-
             const userItem = document.createElement('li');
             userItem.textContent = user.username;
-           
             userItem.addEventListener('click', () => addUser(user));
             userSearchResults.appendChild(userItem);
         });
-
-        
     } else {
         userSearchResults.innerHTML = '<li>User not found!</li>';
     }
@@ -113,10 +105,9 @@ async function addUser(user) {
     const response = await fetch('http://localhost:3000/chatApp/chat/addUser', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify( user ),
+        body: JSON.stringify(user),
     });
-    const res=await response.json()
-    console.log(res)
+    const res = await response.json();
     if (response.ok) {
         addUserToChatList(user.username);
         alert('User added successfully!');
@@ -144,6 +135,7 @@ async function selectChatUser(username) {
         messages.forEach(msg => {
             const messageElement = document.createElement('div');
             messageElement.textContent = `${msg.from}: ${msg.content}`;
+            messageElement.classList.add(msg.from === localStorage.getItem('email') ? 'sent' : 'received');
             document.getElementById('messages').appendChild(messageElement);
         });
     } catch (error) {
@@ -151,40 +143,46 @@ async function selectChatUser(username) {
     }
 }
 
-document.getElementById('sendMessage').addEventListener('click', () => {
+document.getElementById('sendMessage').addEventListener('click', sendMessage);
+
+document.getElementById('messageInput').addEventListener('keypress', (event) => {
+    if (event.key === 'Enter') {
+        sendMessage();
+    }
+});
+
+function sendMessage() {
     const messageInput = document.getElementById('messageInput');
     const message = messageInput.value.trim();
     if (!activeChatUser || !message) return alert('Please select a user and enter a message!');
 
     socket.emit('sendMessage', { to: activeChatUser, message });
-    
+
     const messageElement = document.createElement('div');
     messageElement.textContent = `You: ${message}`;
+    messageElement.classList.add('sent');
     document.getElementById('messages').appendChild(messageElement);
-    
+
     messageInput.value = '';
-});
+}
 
 socket.on('receiveMessage', (data) => {
     if (activeChatUser !== data.from) return;
 
     const messageElement = document.createElement('div');
     messageElement.textContent = `${data.from}: ${data.content}`;
+    messageElement.classList.add('received');
     document.getElementById('messages').appendChild(messageElement);
 });
 
 fetchAddedUsers();
 
-
-
-
-// channels
+// Channels
 
 searchChannelButton.addEventListener('click', async () => {
     const query = searchChannelInput.value.trim();
     if (!query) return;
 
-    // Assuming `/create-group` endpoint supports searching by group name
     const response = await fetch('/create-group', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -208,4 +206,19 @@ searchChannelButton.addEventListener('click', async () => {
         errorItem.textContent = 'Channel not found!';
         channelSearchResults.appendChild(errorItem);
     }
+});
+
+// Add the logout functionality
+document.getElementById('logoutButton').addEventListener('click', () => {
+    // Clear the token cookie
+    document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    
+    // Clear the email from localStorage
+    localStorage.removeItem('email');
+    
+    // Disconnect the socket
+    socket.disconnect();
+    
+    // Redirect to the login page
+    window.location.href = '/login.html';
 });
