@@ -46,12 +46,26 @@ function addUserToChatList(username) {
 
     const userElement = document.createElement('li');
     userElement.dataset.username = username;
-    userElement.textContent = username;
-
+    // Use flex layout to space the username and remove button.
+    userElement.style.display = 'flex';
+    userElement.style.justifyContent = 'space-between';
+    userElement.style.alignItems = 'center';
+    
+    // Create a span for the username.
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = username;
+    
     const removeButton = document.createElement('button');
-    removeButton.textContent = '❌';
-    removeButton.addEventListener('click', () => removeUser(username));
-
+    removeButton.classList.add('remove-button');
+    // Use a simpler, subtle cross symbol
+    removeButton.textContent = '×'; // substitute for the red cross
+    // Prevent click on remove from triggering selectChatUser.
+    removeButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        removeUser(username);
+    });
+    
+    userElement.appendChild(nameSpan);
     userElement.appendChild(removeButton);
     userElement.addEventListener('click', () => selectChatUser(username));
     directMessagesList.appendChild(userElement);
@@ -64,16 +78,14 @@ async function removeUser(username) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username }),
         });
-
-        if (response.ok) {
-            const userElement = directMessagesList.querySelector(`li[data-username="${username}"]`);
-            if (userElement) directMessagesList.removeChild(userElement);
-            alert(`${username} has been removed.`);
-        } else {
-            alert('Failed to remove user.');
-        }
+        if (!response.ok) throw new Error((await response.json()).message || 'Failed to remove user');
+        
+        const userElement = directMessagesList.querySelector(`li[data-username="${username}"]`);
+        if (userElement) directMessagesList.removeChild(userElement);
+        alert(`${username} has been removed.`);
     } catch (error) {
-        console.error('Error removing user:', error);
+        console.error("removeUser error:", error);
+        alert(error.message);
     }
 }
 
@@ -131,11 +143,15 @@ async function selectChatUser(username) {
             body: JSON.stringify({ to: username }),
         });
         const messages = await response.json();
-
+        const loggedInUsername = localStorage.getItem('username'); // use username instead of email
         messages.forEach(msg => {
             const messageElement = document.createElement('div');
-            messageElement.textContent = `${msg.from}: ${msg.content}`;
-            messageElement.classList.add(msg.from === localStorage.getItem('email') ? 'sent' : 'received');
+            // messageElement.textContent = `${msg.from}: ${msg.content}`;
+            messageElement.textContent = `${msg.content}`;
+            // Compare with the stored username to determine message alignment
+            messageElement.classList.add(
+                msg.from === loggedInUsername ? 'sent' : 'received'
+            );
             document.getElementById('messages').appendChild(messageElement);
         });
     } catch (error) {
@@ -159,7 +175,7 @@ function sendMessage() {
     socket.emit('sendMessage', { to: activeChatUser, message });
 
     const messageElement = document.createElement('div');
-    messageElement.textContent = `You: ${message}`;
+    messageElement.textContent = ` ${message}`;
     messageElement.classList.add('sent');
     document.getElementById('messages').appendChild(messageElement);
 
@@ -170,7 +186,7 @@ socket.on('receiveMessage', (data) => {
     if (activeChatUser !== data.from) return;
 
     const messageElement = document.createElement('div');
-    messageElement.textContent = `${data.from}: ${data.content}`;
+    messageElement.textContent = ` ${data.content}`;
     messageElement.classList.add('received');
     document.getElementById('messages').appendChild(messageElement);
 });

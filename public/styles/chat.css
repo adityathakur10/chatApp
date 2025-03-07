@@ -152,7 +152,7 @@ body {
 
 .sent {
     text-align: right;
-    background-color: #dcf8c6;
+    background-color: #d3d3d3; /* changed from green (#dcf8c6) to grey */
     padding: 10px;
     border-radius: 8px;
     margin: 5px 0;
@@ -274,6 +274,19 @@ body {
 
 .close:hover {
     color: #333333;
+}
+
+.remove-button {
+    background: none;
+    border: none;
+    color: #888888; /* subtle grey for the icon */
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0 5px;
+}
+
+.remove-button:hover {
+    color: #555555;
 }
 
 @media (max-width: 768px) {

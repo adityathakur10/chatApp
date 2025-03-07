@@ -18,21 +18,16 @@ const userLoggedOut=async(socketId)=>{
 }
 const sendMessage = async (io, from, to, content) => {
     try {
-        await chatHelper.saveMessage( from,to, content );
-
+        await chatHelper.saveMessage(from, to, content);
         const recipient = await chatHelper.findUserbyusername(to);
-        // console.log("Recipient:", recipient);
-        
         if (recipient && recipient.socketId) {
             io.to(recipient.socketId).emit("receiveMessage", { from, content });
-            // console.log('message received')
             return { success: true, message: "Message sent in real-time" };
-        } else {
-            return { success: true, message: "User offline, message stored" };
         }
+        return { success: true, message: "User offline, message stored" };
     } catch (error) {
-        console.error("Error sending message:", error.message);
-        return { success: false, error: error.message };
+        console.error("sendMessage error:", error);
+        return { success: false, error: "Error sending message, please try again." };
     }
 };
 

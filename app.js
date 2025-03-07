@@ -39,31 +39,7 @@ app.use('/chatApp/chat',authenticate,chatRoutes)
 
 // webSockets
 chatSocketHandeler(io)
-// io.on('connection',(socket)=>{
-//     console.log('user connected: ',socket.id)
 
-//     socket.on('userLoggedIn',async(email)=>{
-//         try {
-//             const user=await User.findOneAndUpdate(
-//                 {email},
-//                 {socketId:socket.id},
-//                 {new:true}
-//             );
-//             console.log(`${email} is now connected with socketId ${socket.id}`)
-//         } catch (error) {
-//             console.log('error updating socketId:- ',error)
-//         }
-//     })
-
-//     socket.on('disconnect',async()=>{
-//         await User.findOneAndUpdate(
-//             {socketId:socket.id},
-//             {socketId:null},
-//             {new:true}
-//         )
-//         console.log('user disconnected:- ',socket.id)
-//     })
-// })
 
 
 const port=3000;

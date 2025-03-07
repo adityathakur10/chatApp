@@ -47,7 +47,7 @@ const login=async(req,res)=>{
             sameSite:'Strict',
             maxAge:3600000
         })
-        res.status(200).json({ message: "Login successful"});
+        res.status(200).json({ message: "Login successful",username:existingUser.username});
 
     } catch (error) {
         console.log(error)

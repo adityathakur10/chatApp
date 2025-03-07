@@ -47,6 +47,7 @@ document.getElementById('loginForm').addEventListener('submit',async function(e)
                 socket.emit('userLoggedIn',email)
 
                 localStorage.setItem('email', email);
+                localStorage.setItem('username', data.username);
                 window.location.href='/chat.html';
             }else{
                 alert(data.message || 'login failed!')
