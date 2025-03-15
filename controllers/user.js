@@ -1,5 +1,6 @@
 const User=require('../models/user');
 const message_model=require('../models/message');
+const { getChatHistory } = require('../controllers/chatHelper');
 // const { options } = require('../routes/chat');
 
 const searchUser=async(req,res)=>{
@@ -89,10 +90,7 @@ const fetchMessages=async(req,res)=>{
             return res.status(400).json({error:"receipient username is required"});
         }
    
-        const messages=await message_model.find({
-            $or:[{from,to},{from:to,to:from}]
-        }).sort({createdAt:1});
-        
+        const messages = await getChatHistory(from, to);
         res.json(messages);
     } catch (error) {
         console.log('error fetching messages:- ',error);

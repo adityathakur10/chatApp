@@ -82,7 +82,16 @@ async function removeUser(username) {
         
         const userElement = directMessagesList.querySelector(`li[data-username="${username}"]`);
         if (userElement) directMessagesList.removeChild(userElement);
+        
         alert(`${username} has been removed.`);
+        
+        // If the removed chat is actively displayed, clear chat and show overlay.
+        if (activeChatUser === username) {
+            document.getElementById('messages').innerHTML = '';
+            document.getElementById('chatHeader').textContent = 'Select a user to chat';
+            activeChatUser = null;
+            showChatOverlay();
+        }
     } catch (error) {
         console.error("removeUser error:", error);
         alert(error.message);
@@ -131,10 +140,14 @@ async function addUser(user) {
 }
 
 let activeChatUser = null;
+
 async function selectChatUser(username) {
     activeChatUser = username;
     document.getElementById('chatHeader').textContent = `Chat with ${username}`;
     document.getElementById('messages').innerHTML = '';
+    
+    // Remove the overlay when a chat is active
+    hideChatOverlay();
 
     try {
         const response = await fetch('http://localhost:3000/chatApp/chat/fetchMessages', {
@@ -143,12 +156,11 @@ async function selectChatUser(username) {
             body: JSON.stringify({ to: username }),
         });
         const messages = await response.json();
-        const loggedInUsername = localStorage.getItem('username'); // use username instead of email
+        const loggedInUsername = localStorage.getItem('username');
+
         messages.forEach(msg => {
             const messageElement = document.createElement('div');
-            // messageElement.textContent = `${msg.from}: ${msg.content}`;
             messageElement.textContent = `${msg.content}`;
-            // Compare with the stored username to determine message alignment
             messageElement.classList.add(
                 msg.from === loggedInUsername ? 'sent' : 'received'
             );
@@ -238,3 +250,22 @@ document.getElementById('logoutButton').addEventListener('click', () => {
     // Redirect to the login page
     window.location.href = '/login.html';
 });
+
+function showChatOverlay() {
+    const chat = document.getElementById('chat');
+    // Add the blur class
+    chat.classList.add('blurred');
+    // Ensure the overlay is visible
+    const overlay = document.getElementById('chatOverlay');
+    if (overlay) overlay.style.display = 'flex';
+}
+
+function hideChatOverlay() {
+    const chat = document.getElementById('chat');
+    chat.classList.remove('blurred');
+    const overlay = document.getElementById('chatOverlay');
+    if (overlay) overlay.style.display = 'none';
+}
+
+// On initial page load assume no chat is selected, so show the overlay.
+document.addEventListener('DOMContentLoaded', showChatOverlay);

@@ -96,6 +96,29 @@ body {
     flex-direction: column;
     padding: 20px;
     background: #ffffff;
+    position: relative; /* needed for overlay positioning */
+}
+
+/* When no chat is active, blur the background */
+#chat.blurred {
+    filter: blur(5px);
+    pointer-events: none;
+}
+
+/* The overlay shown when no chat is selected */
+.chat-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #333;
+    z-index: 100;
 }
 
 #messages {
