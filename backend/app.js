@@ -3,6 +3,7 @@ const {createServer}=require('http')
 const path=require('path')
 const {Server}=require('socket.io')
 const cookies=require('cookie-parser')
+const cors=require('cors')
 require('dotenv').config();
 
 const User=require('./models/user')
@@ -16,11 +17,19 @@ const chatSocketHandeler=require('./socket/chat')
 //binding socket.io with the server
 const app=express();
 const server=createServer(app);
+
+const corsOptions={
+    origin:'http://localhost:5173',
+    credentials:true
+}
 const io=new Server(server,{
-    connectionStateRecovery:{}
+    connectionStateRecovery:{},
+    cors:corsOptions
 });
 
+
 //middleware
+app.use(cors(corsOptions))
 app.use(cookies());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -34,7 +43,7 @@ app.use((req,res,next)=>{
 })
 
 //routes
-app.use('/chatApp/auth',authRoutes)
+app.use('/auth',authRoutes)
 app.use('/chatApp/chat',authenticate,chatRoutes)
 
 // webSockets
