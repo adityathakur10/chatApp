@@ -1,16 +1,16 @@
 import React from 'react'
 import { useAuthContext } from '../context/AuthContext';
 import Sidebar from '../components/sidebar/Sidebar';
-import Chat from '../components/chat/Chat';
+import Chat from '../components/chat/messages';
 import DetailsPanel from '../components/details/detailsPanel';
 
 const ChatPage=()=>{
     const {authUser}=useAuthContext()
     return (
-        <div className='grid grid-cols-12 min-h-screen bg-gray-50'>
-            <div className='col-span-3'> <Sidebar/> </div>
-            <div className='col-span-6 border-solid border-gray-200 '> <Chat/> </div>
-            <div className='col-span-3'> <DetailsPanel/> </div>
+        <div className='flex w-full max-h-screen p-4 bg-gray-50'>
+            <div className='w-[25%]'><Sidebar/> </div>
+            <div className='w-[50%] border-solid border-gray-200 '> <Chat/> </div>
+            <div className='w-[25%]'> <DetailsPanel/> </div>
         </div>
     )
 };
