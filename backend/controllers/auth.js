@@ -47,14 +47,7 @@ const login=async(req,res)=>{
         }
         
         const token=existingUser.createJWT()
-
-        // res.cookie('token',token,{
-        //     // httpOnly:true,
-        //     httpOnly:false,
-        //     secure:process.env.NODE_ENV='production',
-        //     sameSite:'Strict',
-        //     maxAge:3600000
-        // })
+        
         res.status(200).json({
             message: "Login successful",
             username: existingUser.username,

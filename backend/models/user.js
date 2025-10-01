@@ -19,18 +19,15 @@ const userSchema=new mongoose.Schema({
         required:true,
         minLength:6
     },
-    socketId:{
+    profilePicture:{
         type:String,
-
+        default:''
     },
-    addedUser:{
-        type:[String],
-        default:[]
-    },
-    channels:[{
-        type:String
+    conversations:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'conversation'
     }]
-})
+},{timestamps:true});
 
 userSchema.pre('save',async function(next){
     // console.log(this.password)
