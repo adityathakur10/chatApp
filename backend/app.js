@@ -44,7 +44,7 @@ app.use((req,res,next)=>{
 
 //routes
 app.use('/auth',authRoutes)
-app.use('/chatApp/chat',authenticate,chatRoutes)
+app.use('/users',authenticate,chatRoutes)
 
 // webSockets
 chatSocketHandeler(io)

@@ -7,9 +7,9 @@ import DetailsPanel from '../components/details/detailsPanel';
 const ChatPage=()=>{
     const {authUser}=useAuthContext()
     return (
-        <div className='flex w-full max-h-screen p-4 bg-gray-50'>
+        <div className='flex w-full h-screen p-4 bg-surface'>
             <div className='w-[25%]'><Sidebar/> </div>
-            <div className='w-[50%] border-solid border-gray-200 '> <Chat/> </div>
+            <div className='w-[50%] border-solid border-muted '> <Chat/> </div>
             <div className='w-[25%]'> <DetailsPanel/> </div>
         </div>
     )

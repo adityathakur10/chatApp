@@ -3,7 +3,7 @@ const Conversation = require('./Conversation')
 
     const msgSchema=new mongoose.Schema({
         sender:{
-            type:mongoose.Schema.types.ObjectId,
+            type:mongoose.Schema.Types.ObjectId,
             ref:'user',
             required:true,
         },

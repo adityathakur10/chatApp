@@ -17,7 +17,7 @@ const Conversation=({conversation})=>{
     const lastmessage=conversation.lastmessage;
     return (
         <>
-            <div className="flex  items-center rounded-xl p-2 hover:bg-gray-200">
+            <div className="flex items-center rounded-xl p-2 hover:bg-surface cursor-pointer">
                 <div className="avatar">
                     <div className="w-10 rounded-full">
                         {/* //Todo :add dynamic profil image */}
@@ -26,10 +26,10 @@ const Conversation=({conversation})=>{
                 </div>
                 <div className="flex flex-1 flex-col">
                     <div className="flex justify-between px-2">
-                        <p className="font-medium text-lg text-black">{conversation.username}</p>
-                        <span className="text-md text-black">{formatTime(lastmessage.timestamp)}</span>
+                        <p className="font-medium text-lg text-ink">{conversation.username}</p>
+                        <span className="text-md text-ink/80">{formatTime(lastmessage.timestamp)}</span>
                     </div>
-                    <div className="text-sm text-gray-500 px-2">
+                    <div className="text-sm text-ink/60 px-2">
                         <p>{lastmessage.content}</p>
                     </div>
                 </div>

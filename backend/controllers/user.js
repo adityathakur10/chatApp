@@ -5,20 +5,29 @@ const { getChatHistory } = require('../controllers/chatHelper');
 
 const searchUser=async(req,res)=>{
     try {
-        const {username}=req.body;
-    
+        console.log('hi')
+        const {query}=req.params;
+        const loggedInUserId=req.user.userId;
+        if(!query ){
+            return res.status(400).json({msg:'Search query is required'})
+        }
+        // console.log(query)
         const users=await User.find({
-            username:{$regex:`^${username}`,$options:'i'}
-        }).select('username email')    
+            username:{$regex:`^${query}`,$options:'i'},
+            _id:{$ne:loggedInUserId}
+        }).select('username profilePicture')    
         console.log(users)
-        if(users.length==0)
-            return res.status(400).json({msg:'No user found'})
+
+        // if(users.length==0)
+        //     return res.status(400).json({msg:'No user found'})
+// console.log('hjjj')
         return res.status(200).json(users)
     } catch (error) {
         console.error('error searching for users');
         return res.status(500).json({ msg: 'Server error' });
     }
 }
+
 const addUser=async(req,res)=>{
     try {
         const {username:name}=req.body;

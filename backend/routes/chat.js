@@ -7,6 +7,6 @@ router.post('/addUser',addUser)
 router.post('/fetchMessages',fetchMessages)
 router.post('/fetchAddedUsers',fetchAddedUser)
 router.delete('/removeUser',removeUser)
-router.post('/searchUser',searchUser)
+router.get('/search/:query',searchUser)
 
 module.exports=router

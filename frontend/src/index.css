@@ -1,8 +1,31 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+/* Design tokens (Tailwind v4 @theme) */
+@theme {
+  --color-brand: #8edb55;       /* primary accent */
+  --color-ink: #323430;         /* main text */
+  --color-surface: #f5f4f0;     /* app background */
+  --color-surface-2: #ffffff;   /* cards, inputs */
+  --color-muted: #e9e8e4;       /* borders, dividers */
+}
+
+/* Optional: DaisyUI theme mapping so `btn-primary`, etc. use our colors */
+@plugin "daisyui/theme" {
+  name: "chat";
+  default: true;
+  --color-primary: var(--color-brand);
+  --color-neutral: var(--color-ink);
+  --color-base-100: var(--color-surface);
+  --color-base-200: var(--color-surface-2);
+  --color-base-300: var(--color-muted);
+  --radius-box: 1rem;
+  --radius-btn: 0.875rem;
+}
+
 body{
-    background-color: white;
+    background-color: var(--color-surface);
+    color: var(--color-ink);
 }
 .scrollbar-hidden {
     scrollbar-width: none; /* Firefox */

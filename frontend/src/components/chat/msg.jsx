@@ -1,40 +1,45 @@
 import React from 'react'
+import { useAuthContext } from '../../context/AuthContext'
 
-const Msg = () => {
+// Message bubble that aligns left/right based on current user.
+// Expects `message` with shape: { from: string, to?: string, content: string, timestamp?: string }
+// Optionally pass `otherUser` for avatar fallback: { username, profilePic }
+const Msg = ({ message, otherUser }) => {
+  const { authUser } = useAuthContext()
+  const me = authUser?.username
+
+  const isOwn = message?.from === me
+  const ts = message?.timestamp ? new Date(message.timestamp) : new Date()
+  const time = ts.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+
+  const myAvatar = authUser?.profilePicture && authUser.profilePicture.trim()
+    ? authUser.profilePicture
+    : `https://avatar.iran.liara.run/public/boy?username=${encodeURIComponent(me || 'me')}`
+
+  const otherAvatar = otherUser?.profilePic && otherUser.profilePic.trim()
+    ? otherUser.profilePic
+    : `https://avatar.iran.liara.run/public/girl?username=${encodeURIComponent(otherUser?.username || 'user')}`
+
+  const avatar = isOwn ? myAvatar : otherAvatar
+  const name = isOwn ? 'You' : (message?.from || otherUser?.username || 'User')
+
   return (
-    <div>
-        <div className="chat chat-start">
-                    <div className="chat-image avatar">
-                        <div className="w-10 rounded-full">
-                        <img
-                            alt="Tailwind CSS chat bubble component"
-                            src="https://img.daisyui.com/images/profile/demo/kenobee@192.webp"
-                        />
-                        </div>
-                    </div>
-                    <div className="chat-header">
-                        Obi-Wan Kenobi
-                        <time className="text-xs opacity-50">12:45</time>
-                    </div>
-                    <div className="chat-bubble">You were the Chosen One!</div>
-                    <div className="chat-footer opacity-50">Delivered</div>
-                    </div>
-                    <div className="chat chat-end">
-                    <div className="chat-image avatar">
-                        <div className="w-10 rounded-full">
-                        <img
-                            alt="Tailwind CSS chat bubble component"
-                            src="https://img.daisyui.com/images/profile/demo/anakeen@192.webp"
-                        />
-                        </div>
-                    </div>
-                    <div className="chat-header">
-                        Anakin
-                        <time className="text-xs opacity-50">12:46</time>
-                    </div>
-                    <div className="chat-bubble">I hate you!</div>
-                    <div className="chat-footer opacity-50">Seen at 12:46</div>
-                </div>
+    <div className={`chat  ${isOwn ? 'chat-end' : 'chat-start'}  `}>
+      <div className="chat-image avatar">
+        <div className="w-8 rounded-full">
+          <img alt={name} src={avatar} />
+        </div>
+      </div>
+
+      <div className={` flex flex-col chat-bubble text-lg ${isOwn ? 'bg-brand text-ink' : 'bg-white text-ink'}`}>
+        <div className="chat-header flex justify-between">
+          {name}
+          <time className="text-xs  opacity-80 ml-1">{time}</time>
+        </div>
+        {message?.content}
+      </div>
+      {/* Placeholder for status; wire real delivery/read later */}
+      {/* <div className="chat-footer opacity-50">Delivered</div> */}
     </div>
   )
 }
