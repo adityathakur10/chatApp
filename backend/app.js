@@ -1,20 +1,18 @@
 const express=require('express')
 const {createServer}=require('http')
-const path=require('path')
-const {Server}=require('socket.io')
+
 const cookies=require('cookie-parser')
 const cors=require('cors')
+const path=require('path')
 require('dotenv').config();
 
-const User=require('./models/user')
 
 const connectDB=require('./db/connect')
-const authRoutes=require('./routes/auth')
-const chatRoutes=require('./routes/chat')
-const authenticate=require('./middlewares/auth')
-const chatSocketHandeler=require('./socket/chat')
+const router=require('./routes/index')
 
-//binding socket.io with the server
+const setupSocket=require('./socket/index')
+
+//wrap express app with http server for websockets
 const app=express();
 const server=createServer(app);
 
@@ -22,10 +20,8 @@ const corsOptions={
     origin:'http://localhost:5173',
     credentials:true
 }
-const io=new Server(server,{
-    connectionStateRecovery:{},
-    cors:corsOptions
-});
+//adding JWT auth to socket.io connections
+const io=setupSocket(server,corsOptions)
 
 
 //middleware
@@ -43,11 +39,7 @@ app.use((req,res,next)=>{
 })
 
 //routes
-app.use('/auth',authRoutes)
-app.use('/users',authenticate,chatRoutes)
-
-// webSockets
-chatSocketHandeler(io)
+app.use('/',router)
 
 
 
@@ -56,7 +48,7 @@ const start=async()=>{
     try {
         await connectDB(process.env.MONGO_URI)
 
-        server.listen(3000,()=>{
+        server.listen(port,()=>{
             console.log(`database connected and listening on port ${port}`)
         })
     } catch (error) {

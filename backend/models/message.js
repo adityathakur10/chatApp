@@ -1,5 +1,4 @@
-    const mongoose=require('mongoose')
-const Conversation = require('./Conversation')
+const mongoose=require('mongoose')
 
     const msgSchema=new mongoose.Schema({
         sender:{
@@ -7,7 +6,7 @@ const Conversation = require('./Conversation')
             ref:'user',
             required:true,
         },
-        Conversation:{
+        conversation:{
             type:mongoose.Schema.Types.ObjectId,
             ref:'conversation',
             required:true
