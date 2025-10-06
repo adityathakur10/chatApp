@@ -1,22 +1,28 @@
+import { useEffect, useState } from "react";
+import { io } from "socket.io-client";
 import { useAuthContext } from "../context/AuthContext";
-import { useMemo, useEffect } from "react";
-import {io} from "socket.io-client"
 
-export default function useSocket(){
-    const {authUser} =useAuthContext();
+export default function useSocket() {
+  const { authUser } = useAuthContext();
+  const [socket, setSocket] = useState(null);
 
-    const socket=useMemo(()=>{
-        if(!authUser?.token)return null;
+  useEffect(() => {
+    if (!authUser?.token) {
+      setSocket(null);
+      return;
+    }
+    const newSocket = io("http://localhost:3000", {
+      transports: ["websocket"],
+      auth: { token: authUser.token },
+    });
 
-        return io("http://localhost:3000",{
-            transports:["websocket"],
-            auth:{token:authUser.token}
-        })
-    },[authUser?.token]);
+    setSocket(newSocket);
 
-    useEffect(()=>{
-       return ()=> socket?.close()
-    },[socket])
+    return () => {
+      newSocket.close();
+      setSocket(null);
+    };
+  }, [authUser?.token]);
 
-    return socket
+  return socket;
 }

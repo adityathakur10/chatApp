@@ -1,47 +1,43 @@
-import React from 'react'
-import { useAuthContext } from '../../context/AuthContext'
+import React from "react";
+import { useAuthContext } from "../../context/AuthContext";
 
-// Message bubble that aligns left/right based on current user.
-// Expects `message` with shape: { from: string, to?: string, content: string, timestamp?: string }
-// Optionally pass `otherUser` for avatar fallback: { username, profilePic }
 const Msg = ({ message, otherUser }) => {
-  const { authUser } = useAuthContext()
-  const me = authUser?.username
+  const { authUser } = useAuthContext();
+  const myId = authUser?._id;
+  const myName = authUser?.username;
 
-  const isOwn = message?.from === me
-  const ts = message?.timestamp ? new Date(message.timestamp) : new Date()
-  const time = ts.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  const isOwn = message?.from === myId || message?.from === myName;
+  const ts = message?.timestamp ? new Date(message.timestamp) : new Date();
+  const time = ts.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
   const myAvatar = authUser?.profilePicture && authUser.profilePicture.trim()
     ? authUser.profilePicture
-    : `https://avatar.iran.liara.run/public/boy?username=${encodeURIComponent(me || 'me')}`
+    : `https://avatar.iran.liara.run/public/boy?username=${encodeURIComponent(myName || "me")}`;
 
   const otherAvatar = otherUser?.profilePic && otherUser.profilePic.trim()
     ? otherUser.profilePic
-    : `https://avatar.iran.liara.run/public/girl?username=${encodeURIComponent(otherUser?.username || 'user')}`
+    : `https://avatar.iran.liara.run/public/girl?username=${encodeURIComponent(otherUser?.username || "user")}`;
 
-  const avatar = isOwn ? myAvatar : otherAvatar
-  const name = isOwn ? 'You' : (message?.from || otherUser?.username || 'User')
+  const avatar = isOwn ? myAvatar : otherAvatar;
+  const name = isOwn ? "You" : otherUser?.username || message?.from || "User";
 
   return (
-    <div className={`chat  ${isOwn ? 'chat-end' : 'chat-start'}  `}>
+    <div className={`chat ${isOwn ? "chat-end" : "chat-start"}`}>
       <div className="chat-image avatar">
         <div className="w-8 rounded-full">
           <img alt={name} src={avatar} />
         </div>
       </div>
 
-      <div className={` flex flex-col chat-bubble text-lg ${isOwn ? 'bg-brand text-ink' : 'bg-white text-ink'}`}>
-        <div className="chat-header flex justify-between">
-          {name}
-          <time className="text-xs  opacity-80 ml-1">{time}</time>
+      <div className={`chat-bubble text-base ${isOwn ? "bg-brand text-white" : "bg-white text-ink"}`}>
+        <div className="chat-header flex items-center justify-between text-sm font-medium mb-1">
+          <span>{name}</span>
+          <time className="text-xs opacity-70 ml-2">{time}</time>
         </div>
-        {message?.content}
+        <div>{message?.content}</div>
       </div>
-      {/* Placeholder for status; wire real delivery/read later */}
-      {/* <div className="chat-footer opacity-50">Delivered</div> */}
     </div>
-  )
-}
+  );
+};
 
-export default Msg
+export default Msg;
