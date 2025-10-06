@@ -8,7 +8,7 @@ const chatRouter=require('./chat')
 const conversationRouter=require('./conversations')
 
 router.use('/auth',authRouter);
-router.use('/chat',authenticate,chatRouter);
+router.use('/users',authenticate,chatRouter);
 router.use('/conv',authenticate,conversationRouter);
 
 module.exports=router;

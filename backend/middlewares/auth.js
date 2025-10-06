@@ -2,8 +2,8 @@ const jwt =require('jsonwebtoken');
 //token should be renewd after it is expired
 
 const authenticate=async(req,res,next)=>{
-    const authHeader=req.headers.authorization;
-    
+    // console.log('hi')
+    const authHeader=req.headers.Authorization;
     if(!authHeader || !authHeader.startsWith('Bearer '))
         return res.status(401).json({message:'authentication failed. No token provided'})
     

@@ -1,6 +1,6 @@
 const User=require('../models/user');
 const message_model=require('../models/message');
-const { getChatHistory } = require('../controllers/chatHelper');
+// const { getChatHistory } = require('../controllers/chatHelper');
 // const { options } = require('../routes/chat');
 
 const searchUser=async(req,res)=>{
@@ -90,21 +90,21 @@ const fetchAddedUser=async(req,res)=>{
     }
 }
 
-const fetchMessages=async(req,res)=>{
-    try {
-        const {to}=req.body;
-        const from=req.user.name;
+// const fetchMessages=async(req,res)=>{
+//     try {
+//         const {to}=req.body;
+//         const from=req.user.name;
          
-        if(!to){
-            return res.status(400).json({error:"receipient username is required"});
-        }
+//         if(!to){
+//             return res.status(400).json({error:"receipient username is required"});
+//         }
    
-        const messages = await getChatHistory(from, to);
-        res.json(messages);
-    } catch (error) {
-        console.log('error fetching messages:- ',error);
-        res.status(500).json({ error:'internal sever error'});
-    }
-}
+//         // const messages = await getChatHistory(from, to);
+//         res.json(messages);
+//     } catch (error) {
+//         console.log('error fetching messages:- ',error);
+//         res.status(500).json({ error:'internal sever error'});
+//     }
+// }
 
-module.exports={searchUser,fetchMessages,addUser,removeUser,fetchAddedUser}
+module.exports={searchUser,addUser,removeUser,fetchAddedUser}

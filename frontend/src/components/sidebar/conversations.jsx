@@ -14,7 +14,7 @@ const dummyConversations = [
     },
   },
   {
-    _id: "1",
+    _id: "7",
     username: "Sandra Perry",
     profilePic: "https://avatar.iran.liara.run/public/girl",
     lastmessage: {
@@ -23,7 +23,7 @@ const dummyConversations = [
     },
   },
   {
-    _id: "1",
+    _id: "6",
     username: "Sandra Perry",
     profilePic: "https://avatar.iran.liara.run/public/girl",
     lastmessage: {
@@ -32,7 +32,7 @@ const dummyConversations = [
     },
   },
   {
-    _id: "1",
+    _id: "5",
     username: "Sandra Perry",
     profilePic: "https://avatar.iran.liara.run/public/girl",
     lastmessage: {
@@ -41,7 +41,7 @@ const dummyConversations = [
     },
   },
   {
-    _id: "1",
+    _id: "4",
     username: "Sandra Perry",
     profilePic: "https://avatar.iran.liara.run/public/girl",
     lastmessage: {
@@ -50,7 +50,7 @@ const dummyConversations = [
     },
   },
   {
-    _id: "1",
+    _id: "3",
     username: "Sandra Perry",
     profilePic: "https://avatar.iran.liara.run/public/girl",
     lastmessage: {
@@ -59,25 +59,7 @@ const dummyConversations = [
     },
   },
   {
-    _id: "1",
-    username: "Sandra Perry",
-    profilePic: "https://avatar.iran.liara.run/public/girl",
-    lastmessage: {
-      content: "Hello! I’ll be useful to you if you decide to hire me.",
-      timestamp: new Date().toISOString(),
-    },
-  },
-  {
-    _id: "1",
-    username: "Sandra Perry",
-    profilePic: "https://avatar.iran.liara.run/public/girl",
-    lastmessage: {
-      content: "Hello! I’ll be useful to you if you decide to hire me.",
-      timestamp: new Date().toISOString(),
-    },
-  },
-  {
-    _id: "1",
+    _id: "2",
     username: "Sandra Perry",
     profilePic: "https://avatar.iran.liara.run/public/girl",
     lastmessage: {

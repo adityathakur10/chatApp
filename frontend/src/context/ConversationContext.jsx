@@ -9,11 +9,15 @@ export const useConversationContext=()=>{
 export const ConversationContextprovider=({children})=>{
     const [selectedConversation, setSelectedConversation] = useState(null);
     const [messages, setMessages] = useState([]);
+    const [conversationId,setConversationId]=useState(null);
+    const [loadingMessages,setLoadingMessages]=useState(false);
 
     return (
         <ConversationContext.Provider value={{
             selectedConversation,setSelectedConversation,
-            messages,setMessages
+            messages,setMessages,
+            conversationId,setConversationId,
+            loadingMessages,setLoadingMessages
         }}>
             {children}
         </ConversationContext.Provider>
