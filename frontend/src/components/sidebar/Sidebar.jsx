@@ -22,7 +22,7 @@ const Sidebar = () => {
 
   return (
     <div className="flex flex-col h-full p-3">
-      <div className="px-6 py-3 h-21 text-ink font-medium text-2xl border-b-2 border-muted">Chats</div>
+      <div className="px-6 py-3 h-21 text-ink font-medium text-2xl border-b-2 border-gray-300">Chats</div>
       <div className="mt-4">
         <Profile />
       </div>

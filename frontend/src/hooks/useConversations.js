@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { useAuthContext } from "../context/AuthContext";
+import { useConversationContext } from "../context/ConversationContext";
 
 export default function useConversations() {
   const { authUser } = useAuthContext();
-  const [conversations, setConversations] = useState([]);
+  const { conversations, setConversations } = useConversationContext();
   const [loading, setLoading] = useState(false);
 
   const fetchConversations = useCallback(async () => {
@@ -23,7 +24,7 @@ export default function useConversations() {
     } finally {
       setLoading(false);
     }
-  }, [authUser?.token]);
+  }, [authUser?.token, setConversations]);
 
   useEffect(() => {
     fetchConversations();

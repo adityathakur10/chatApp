@@ -42,7 +42,7 @@ const Chat = () => {
 
   return (
     <div
-      className="relative p-3 h-full bg-gray-100 rounded-3xl shadow-md text-ink flex flex-col"
+      className="relative p-3 h-full bg-gray-100 rounded-3xl shadow-md text-ink"
       style={{
         backgroundImage: assets.bg
           ? `linear-gradient(rgba(170,170,170,0.9), rgba(170,170,170,0.9)), url(${assets.bg})`
@@ -53,57 +53,61 @@ const Chat = () => {
         boxSizing: "border-box",
       }}
     >
-      <div className="absolute font-medium text-2xl px-6 py-6 w-full flex-none left-0 top-0 z-10 bg-surface-2/45 overflow-hidden rounded-xl backdrop-blur-md">
-        {otherUser.username ? `Chat with ${otherUser.username}` : "Group chat"}
-      </div>
-
       <div
-        ref={scrollRef}
-        className={`flex-1 flex flex-col gap-4 overflow-y-auto px-4 py-2 pt-24 pb-24 scrollbar-hidden ${
+        className={`relative flex flex-col h-full rounded-2xl border border-transparent transition ${
           showEmptyState ? "blur-sm pointer-events-none" : ""
         }`}
       >
-        {loadingMessages ? (
-          <div className="flex justify-center items-center text-ink/60 py-4">
-            Loading messages...
-          </div>
-        ) : messages.length ? (
-          messages.map((m) => <Msg key={m._id || m.timestamp} message={m} otherUser={otherUser} />)
-        ) : (
-          <div className="flex flex-col items-center justify-center text-ink/60 py-10">
-            <p>No messages yet. Say hi!</p>
-          </div>
-        )}
+        <div className="absolute font-medium text-2xl px-6 py-6 w-full flex-none left-0 top-0 z-10 bg-surface-2/45 overflow-hidden rounded-xl backdrop-blur-md">
+          {otherUser.username ? `Chat with ${otherUser.username}` : "Group chat"}
+        </div>
+
+        <div
+          ref={scrollRef}
+          className="flex-1 flex flex-col gap-4 overflow-y-auto px-4 py-4 pb-24 pt-25 scrollbar-hidden"
+        >
+          {loadingMessages ? (
+            <div className="flex justify-center items-center text-ink/60 py-4">
+              Loading messages...
+            </div>
+          ) : messages.length ? (
+            messages.map((m) => <Msg key={m._id || m.timestamp} message={m} otherUser={otherUser} />)
+          ) : (
+            <div className="flex flex-col items-center justify-center text-ink/60 py-10">
+              <p>No messages yet. Say hi!</p>
+            </div>
+          )}
+        </div>
+
+        <div className="relative flex items-center gap-x-4 p-4 flex-nonebackdrop-blur-lg rounded-b-2xl">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Type your message..."
+            className="flex-1 h-14 pl-4 pr-16 rounded-xl bg-surface-2 border border-muted shadow focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
+          />
+          <button
+            type="button"
+            onClick={handleSend}
+            disabled={sending}
+            className="absolute right-7 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-brand text-white shadow disabled:opacity-60"
+          >
+            <Send className="text-white h-5 w-6" />
+          </button>
+        </div>
       </div>
 
       {showEmptyState && (
-        <div className="absolute inset-x-6 inset-y-24 flex flex-col items-center justify-center rounded-2xl bg-surface-2/10 backdrop-blur-xl border border-muted text-center text-ink/70 space-y-3">
+        <div className="absolute inset-3 flex flex-col items-center justify-center rounded-2xl bg-surface-2/20 backdrop-blur-xl border border-muted text-center text-ink/70 space-y-3 z-20">
           <div className="text-4xl">??</div>
-          <h2 className="text-xl font-semibold text-ink">Select a conversation</h2>
+          <h2 className="text-xl font-semibold text-ink">Open a chat</h2>
           <p className="max-w-xs text-sm">
-            Use the search above or pick a contact from the list to start chatting.
+            Choose someone from the list or search for a user to start messaging.
           </p>
         </div>
       )}
-
-      <div className="relative flex items-center gap-x-4 p-4 flex-none">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Type your message..."
-          className="flex-1 h-14 pl-4 pr-16 rounded-xl bg-surface-2 border border-muted shadow focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
-        />
-        <button
-          type="button"
-          onClick={handleSend}
-          disabled={sending}
-          className="absolute right-7 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-brand text-white shadow disabled:opacity-60"
-        >
-          <Send className="text-white h-5 w-6" />
-        </button>
-      </div>
     </div>
   );
 };

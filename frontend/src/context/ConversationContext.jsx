@@ -11,13 +11,16 @@ export const ConversationContextprovider=({children})=>{
     const [messages, setMessages] = useState([]);
     const [conversationId,setConversationId]=useState(null);
     const [loadingMessages,setLoadingMessages]=useState(false);
+    const [conversations, setConversations] = useState([]);
+
 
     return (
         <ConversationContext.Provider value={{
             selectedConversation,setSelectedConversation,
             messages,setMessages,
             conversationId,setConversationId,
-            loadingMessages,setLoadingMessages
+            loadingMessages,setLoadingMessages,
+            conversations,setConversations
         }}>
             {children}
         </ConversationContext.Provider>

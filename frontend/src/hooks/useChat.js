@@ -14,6 +14,7 @@ export default function useChat() {
     setConversationId,
     loadingMessages,
     setLoadingMessages,
+    setConversations,
   } = useConversationContext();
 
   const socket = useSocket();
@@ -91,28 +92,29 @@ export default function useChat() {
     if (!socket) return;
     const onNew = (msg) => {
       setMessages((prev) => [...prev, msg]);
+      
+      setConversations((prev) => {
+        const index = prev.findIndex((c) => c._id === msg.conversationId);
+        if (index === -1) return prev;
+        const updatedConversation = {
+          ...prev[index],
+          lastMessage: { content: msg.content, timestamp: msg.timestamp },
+        };
+        const reordered = [...prev];
+        reordered.splice(index, 1);
+        return [updatedConversation, ...reordered];
+      });
     };
 
     socket.on("message:new", onNew);
-
     return () => socket.off("message:new", onNew);
-  }, [socket, setMessages]);
+  }, [socket, setMessages, setConversations]);
 
   const sendMessage = useCallback(
     (content) => {
       if (!conversationId || !content?.trim()) return;
       const trimmed = content.trim();
 
-      const optimistic = {
-        _id: `${Date.now()}`,
-        conversationId,
-        from: authUser?._id || authUser?.username,
-        content: trimmed,
-        timestamp: new Date().toISOString(),
-        optimistic: true,
-      };
-
-      setMessages((prev) => [...prev, optimistic]);
       setSending(true);
 
       socket?.emit(
@@ -122,12 +124,11 @@ export default function useChat() {
           setSending(false);
           if (!res?.ok) {
             console.error("message:send failed", res?.error);
-            setMessages((prev) => prev.filter((m) => m._id !== optimistic._id));
           }
         }
       );
     },
-    [conversationId, socket, authUser?._id, authUser?.username, setMessages]
+    [conversationId, socket]
   );
 
   return {
