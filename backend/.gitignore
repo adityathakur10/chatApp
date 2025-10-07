@@ -9,6 +9,7 @@ yarn-error.log*
 # Environment variable files
 .env
 .env.*   # If you're using different .env files for different environments (e.g., .env.production, .env.development)
+.env.docker
 
 # Build output directories
 /dist

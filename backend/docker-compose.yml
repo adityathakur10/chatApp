@@ -1,14 +1,16 @@
-version: '3.8'
+version: "3.8"
 
-services: 
+services:
   app:
     build: .
     container_name: my-chatapp
     restart: always
-    ports: 
+    ports:
       - "3000:3000"
     env_file:
-      - .env
+      - .env.docker
+    environment:
+      - CHOKIDAR_USEPOLLING=1
     volumes:
       - .:/app
       - /app/node_modules
