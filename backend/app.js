@@ -1,5 +1,6 @@
 const express=require('express')
 const {createServer}=require('http')
+const {setupRedis}=require('./services/redisService')
 
 const cookies=require('cookie-parser')
 const cors=require('cors')
@@ -9,7 +10,6 @@ require('dotenv').config();
 
 const connectDB=require('./db/connect')
 const router=require('./routes/index')
-
 const setupSocket=require('./socket/index')
 
 //wrap express app with http server for websockets
@@ -22,6 +22,11 @@ const corsOptions={
 }
 //adding JWT auth to socket.io connections
 const io=setupSocket(server,corsOptions)
+
+//redis connection setup
+setupRedis(io,app).catch((err)=>{
+    console.error("Redis bootstrap failed : ",err);
+})
 
 
 //middleware
