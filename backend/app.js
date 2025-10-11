@@ -5,6 +5,7 @@ const {setupRedis}=require('./services/redisService')
 const cookies=require('cookie-parser')
 const cors=require('cors')
 const path=require('path')
+const os=require('os')
 require('dotenv').config();
 
 
@@ -15,6 +16,7 @@ const setupSocket=require('./socket/index')
 //wrap express app with http server for websockets
 const app=express();
 const server=createServer(app);
+const instanceId=process.env.INSTANCE_ID || os.hostname();
 
 const corsOptions={
     origin:process.env.FRONTEND_ORIGIN || 'http://localhost:5173',
@@ -34,6 +36,10 @@ app.use(cors(corsOptions))
 app.use(cookies());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use((req,res,next)=>{
+    res.setHeader('X-Instance',instanceId);
+    next();
+});
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -43,9 +49,16 @@ app.use((req,res,next)=>{
     next();
 })
 
+app.get('/whoami',(req,res)=>{
+    res.json({
+        instanceId,
+        hostname:os.hostname(),
+        pid:process.pid
+    });
+})
+
 //routes
 app.use('/',router)
-
 
 
 const port=3000;

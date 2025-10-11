@@ -1,0 +1,20 @@
+# // backend/docker-compose.override.yml
+services:
+  app:
+    ports: []
+    # expose 3000 only to the internal Docker network, not the host
+    expose:
+      - "3000"
+    # IMPORTANT: no container_name here so compose can spawn app-1, app-2, ...
+    # environment:
+    #   - INSTANCE_ID= ${HOSTNAME:-app}
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "3000:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro

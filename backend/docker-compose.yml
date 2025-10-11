@@ -17,10 +17,7 @@ services:
       retries: 10
   app:
     build: .
-    container_name: my-chatapp
     restart: always
-    ports:
-      - "3000:3000"
     env_file:
       - .env.docker
     environment:
